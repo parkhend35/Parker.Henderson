@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Golf Mini Game – Parker Henderson</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1c3a1c;
+      font-family: 'Georgia', serif;
+      color: #f0ede4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 20px;
+      font-family: 'Trebuchet MS', sans-serif;
+      font-size: 0.9rem;
+    }
+    .topbar a { color: #b8d4a0; text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
+
+    h1 {
+      font-size: 2.4rem;
+      color: #e8f5d8;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      color: #a8c98a;
+      font-family: 'Trebuchet MS', sans-serif;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    /* Game Canvas Area */
+    #game-container {
+      background: #2d5a27;
+      border: 3px solid #6a9e50;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    canvas {
+      display: block;
+      background: #3a6e35;
+      border-radius: 8px;
+      border: 2px solid #4e7a38;
+      width: 100%;
+      cursor: crosshair;
+    }
+
+    /* HUD */
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      font-family: 'Trebuchet MS', sans-serif;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hud-box {
+      background: #1c3a1c;
+      border: 1px solid #6a9e50;
+      border-radius: 6px;
+      padding: 8px 16px;
+      text-align: center;
+      min-width: 100px;
+    }
+    .hud-box .label {
+      font-size: 0.7rem;
+      color: #a8c98a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .hud-box .value {
+      font-size: 1.4rem;
+      color: #e8f5d8;
+      font-weight: bold;
+    }
+
+    #msg {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #d8e8c8;
+      font-family: 'Trebuchet MS', sans-serif;
+      min-height: 24px;
+    }
+    #msg.good { color: #7ed654; font-weight: bold; }
+    #msg.bad  { color: #e06060; }
+
+    /* Power bar */
+    .power-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      font-family: 'Trebuchet MS', sans-serif;
+      font-size: 0.85rem;
+      color: #a8c98a;
+    }
+    #power-bar-wrap {
+      flex: 1;
+      background: #1c3a1c;
+      border: 1px solid #6a9e50;
+      border-radius: 20px;
+      height: 16px;
+      overflow: hidden;
+    }
+    #power-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #6a9e50, #d4e84a, #e06060);
+      border-radius: 20px;
+      transition: width 0.05s;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    button {
+      padding: 10px 28px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Trebuchet MS', sans-serif;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+    #btn-shoot {
+      background: #6a9e50;
+      color: #fff;
+    }
+    #btn-reset {
+      background: #3e3e3e;
+      color: #ddd;
+    }
+
+    /* Scorecard */
+    #scorecard {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+    #scorecard h3 {
+      text-align: center;
+      color: #b8d4a0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-family: 'Trebuchet MS', sans-serif;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Trebuchet MS', sans-serif;
+      font-size: 0.85rem;
+    }
+    th {
+      background: #1c3a1c;
+      color: #a8c98a;
+      padding: 6px 10px;
+      text-align: center;
+      border: 1px solid #4e7a38;
+    }
+    td {
+      background: #2d5a27;
+      color: #d8e8c8;
+      padding: 6px 10px;
+      text-align: center;
+      border: 1px solid #4e7a38;
+    }
+    td.under { color: #7ed654; font-weight: bold; }
+    td.over  { color: #e06060; }
+    td.par   { color: #d8e8c8; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="scratch.html">← Back to Sports Page</a>
+  &nbsp;|&nbsp;
+  <a href="index.html">Professional Site</a>
+</div>
+
+<h1>⛳ Golf Mini Game</h1>
+<p class="subtitle">Aim with your mouse · Click and hold to charge power · Release to shoot</p>
+
+<div id="game-container">
+  <canvas id="golfCanvas" height="320"></canvas>
+
+  <div class="power-row">
+    <span>Power:</span>
+    <div id="power-bar-wrap"><div id="power-bar"></div></div>
+    <span id="power-pct">0%</span>
+  </div>
+
+  <div class="hud">
+    <div class="hud-box">
+      <div class="label">Hole</div>
+      <div class="value" id="hole-num">1 / 9</div>
+    </div>
+    <div class="hud-box">
+      <div class="label">Par</div>
+      <div class="value" id="par-val">3</div>
+    </div>
+    <div class="hud-box">
+      <div class="label">Shots</div>
+      <div class="value" id="shots-val">0</div>
+    </div>
+    <div class="hud-box">
+      <div class="label">Total Score</div>
+      <div class="value" id="total-score">E</div>
+    </div>
+  </div>
+
+  <div id="msg">Aim and click to take your shot!</div>
+
+  <div class="btn-row">
+    <button id="btn-shoot">🏌️ Shoot</button>
+    <button id="btn-reset">↺ Restart</button>
+  </div>
+</div>
+
+<div id="scorecard">
+  <h3>Scorecard</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Hole</th><th>Par</th><th>Score</th><th>+/-</th>
+      </tr>
+    </thead>
+    <tbody id="scorecard-body"></tbody>
+  </table>
+</div>
+
+<script>
+  const canvas = document.getElementById('golfCanvas');
+  const ctx    = canvas.getContext('2d');
+
+  // Resize canvas to match CSS width
+  function resizeCanvas() {
+    const w = canvas.clientWidth;
+    canvas.width  = w;
+    canvas.height = 320;
+    generateHole();
+  }
+
+  // ---- Hole definitions (9 holes) ----
+  const PARS = [3,4,3,5,4,3,4,5,3];
+
+  let holeIndex  = 0;
+  let holeShots  = 0;
+  let totalOver  = 0; // over/under par total
+  let scores     = []; // {par, shots} per hole
+  let ball, hole, obstacles, inFlight, charging, chargeStart, chargeTimer;
+  let mouseAngle = 0;
+  let power      = 0;
+  let ballVX = 0, ballVY = 0;
+  let animFrame;
+  let gameOver = false;
+  let holeComplete = false;
+
+  function generateHole() {
+    const W = canvas.width;
+    const H = canvas.height;
+
+    ball = { x: 60, y: H/2, r: 8 };
+    hole = { x: W - 60, y: H/2 + (Math.random()-0.5)*100, r: 14 };
+
+    // Randomize hole y so it's within bounds
+    hole.y = Math.max(40, Math.min(H - 40, hole.y));
+
+    // Obstacles: 1-3 rectangles
+    obstacles = [];
+    const count = PARS[holeIndex] - 2; // par3=1, par4=2, par5=3
+    for (let i = 0; i < count; i++) {
+      obstacles.push({
+        x: W * (0.35 + i * 0.18),
+        y: 40 + Math.random() * (H - 120),
+        w: 18,
+        h: 60 + Math.random() * 60,
+      });
+    }
+
+    inFlight    = false;
+    charging    = false;
+    holeComplete= false;
+    power       = 0;
+    updatePowerBar(0);
+    setMsg('Aim and click to take your shot!', '');
+    updateHUD();
+    draw();
+  }
+
+  // ---- Drawing ----
+  function draw() {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Fairway gradient
+    const grad = ctx.createLinearGradient(0,0,W,0);
+    grad.addColorStop(0, '#3a7a30');
+    grad.addColorStop(1, '#2d6022');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Rough borders
+    ctx.fillStyle = '#2a5020';
+    ctx.fillRect(0, 0, W, 20);
+    ctx.fillRect(0, H-20, W, 20);
+
+    // Draw aim line if not in flight
+    if (!inFlight && !holeComplete && !gameOver) {
+      ctx.save();
+      ctx.setLineDash([6,6]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(ball.x, ball.y);
+      ctx.lineTo(ball.x + Math.cos(mouseAngle)*80, ball.y + Math.sin(mouseAngle)*80);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Obstacles
+    obstacles.forEach(o => {
+      ctx.fillStyle = '#1a4010';
+      ctx.fillRect(o.x - o.w/2, o.y, o.w, o.h);
+      ctx.strokeStyle = '#0d2808';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(o.x - o.w/2, o.y, o.w, o.h);
+    });
+
+    // Hole (cup)
+    ctx.beginPath();
+    ctx.arc(hole.x, hole.y, hole.r, 0, Math.PI*2);
+    ctx.fillStyle = '#111';
+    ctx.fill();
+    // Flag
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(hole.x, hole.y - hole.r + 2);
+    ctx.lineTo(hole.x, hole.y - hole.r - 28);
+    ctx.stroke();
+    ctx.fillStyle = '#e03030';
+    ctx.beginPath();
+    ctx.moveTo(hole.x, hole.y - hole.r - 28);
+    ctx.lineTo(hole.x + 16, hole.y - hole.r - 20);
+    ctx.lineTo(hole.x, hole.y - hole.r - 12);
+    ctx.fill();
+
+    // Ball
+    const ballGrad = ctx.createRadialGradient(ball.x-2, ball.y-2, 1, ball.x, ball.y, ball.r);
+    ballGrad.addColorStop(0, '#ffffff');
+    ballGrad.addColorStop(1, '#cccccc');
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+    ctx.fillStyle = ballGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // ---- Physics update ----
+  function updateBall() {
+    if (!inFlight) return;
+
+    ballVX *= 0.985;
+    ballVY *= 0.985;
+    ball.x += ballVX;
+    ball.y += ballVY;
+
+    const W = canvas.width, H = canvas.height;
+
+    // Wall bounce
+    if (ball.x - ball.r < 0)   { ball.x = ball.r;   ballVX =  Math.abs(ballVX) * 0.6; }
+    if (ball.x + ball.r > W)   { ball.x = W-ball.r; ballVX = -Math.abs(ballVX) * 0.6; }
+    if (ball.y - ball.r < 0)   { ball.y = ball.r;   ballVY =  Math.abs(ballVY) * 0.6; }
+    if (ball.y + ball.r > H)   { ball.y = H-ball.r; ballVY = -Math.abs(ballVY) * 0.6; }
+
+    // Obstacle collision
+    obstacles.forEach(o => {
+      const left   = o.x - o.w/2;
+      const right  = o.x + o.w/2;
+      const top    = o.y;
+      const bottom = o.y + o.h;
+      if (ball.x + ball.r > left && ball.x - ball.r < right &&
+          ball.y + ball.r > top  && ball.y - ball.r < bottom) {
+        // Simple bounce
+        const fromLeft  = Math.abs(ball.x - left);
+        const fromRight = Math.abs(ball.x - right);
+        const fromTop   = Math.abs(ball.y - top);
+        const fromBot   = Math.abs(ball.y - bottom);
+        const minD = Math.min(fromLeft, fromRight, fromTop, fromBot);
+        if (minD === fromLeft)  { ball.x = left  - ball.r; ballVX = -Math.abs(ballVX)*0.7; }
+        else if (minD === fromRight) { ball.x = right + ball.r; ballVX =  Math.abs(ballVX)*0.7; }
+        else if (minD === fromTop)   { ball.y = top   - ball.r; ballVY = -Math.abs(ballVY)*0.7; }
+        else                         { ball.y = bottom+ ball.r; ballVY =  Math.abs(ballVY)*0.7; }
+      }
+    });
+
+    // Check hole
+    const dx = ball.x - hole.x;
+    const dy = ball.y - hole.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < hole.r + ball.r*0.5) {
+      inFlight = false;
+      holeComplete = true;
+      cancelAnimationFrame(animFrame);
+      finishHole();
+      return;
+    }
+
+    // Ball stopped
+    const speed = Math.sqrt(ballVX*ballVX + ballVY*ballVY);
+    if (speed < 0.3) {
+      inFlight = false;
+      cancelAnimationFrame(animFrame);
+      if (holeShots >= PARS[holeIndex] + 3) {
+        // Max shots
+        finishHole();
+      } else {
+        setMsg('Missed — take another shot!', 'bad');
+      }
+    }
+
+    draw();
+    animFrame = requestAnimationFrame(updateBall);
+  }
+
+  function finishHole() {
+    const diff = holeShots - PARS[holeIndex];
+    totalOver += diff;
+    scores.push({ par: PARS[holeIndex], shots: holeShots, diff });
+    updateScorecard();
+
+    let label = '';
+    if (holeShots === 1)              label = '🏆 HOLE IN ONE!!!';
+    else if (diff === -2)             label = '🦅 Eagle!';
+    else if (diff === -1)             label = '🐦 Birdie!';
+    else if (diff === 0)              label = '✅ Par!';
+    else if (diff === 1)              label = '😬 Bogey';
+    else if (diff === 2)              label = '😤 Double Bogey';
+    else                              label = `😵 +${diff}`;
+
+    const cls = diff <= 0 ? 'good' : 'bad';
+    setMsg(label, cls);
+
+    setTimeout(() => {
+      if (holeIndex < 8) {
+        holeIndex++;
+        holeShots = 0;
+        generateHole();
+      } else {
+        endGame();
+      }
+    }, 1800);
+  }
+
+  function endGame() {
+    gameOver = true;
+    const sign = totalOver === 0 ? 'E' : (totalOver > 0 ? `+${totalOver}` : `${totalOver}`);
+    let grade = totalOver <= -5 ? '🏆 Pro Tour ready!' :
+                totalOver <= 0  ? '🎉 Great round!' :
+                totalOver <= 5  ? '👍 Decent game' :
+                                  '😅 Keep practicing!';
+    setMsg(`Round over! Final: ${sign} — ${grade}`, totalOver <= 0 ? 'good' : 'bad');
+  }
+
+  // ---- Power charging ----
+  function startCharge(e) {
+    if (inFlight || holeComplete || gameOver) return;
+    charging    = true;
+    chargeStart = Date.now();
+    chargeTimer = setInterval(() => {
+      const elapsed = Date.now() - chargeStart;
+      power = Math.min(elapsed / 1500, 1); // max 1.5s for full power
+      updatePowerBar(power);
+    }, 30);
+  }
+
+  function releaseCharge(e) {
+    if (!charging) return;
+    clearInterval(chargeTimer);
+    charging = false;
+    shoot();
+  }
+
+  function shoot() {
+    if (inFlight || holeComplete || gameOver) return;
+    holeShots++;
+    updateHUD();
+
+    const speed = 6 + power * 14;
+    ballVX = Math.cos(mouseAngle) * speed;
+    ballVY = Math.sin(mouseAngle) * speed;
+    inFlight = true;
+    power = 0;
+    updatePowerBar(0);
+    setMsg('', '');
+    animFrame = requestAnimationFrame(updateBall);
+  }
+
+  // ---- Mouse tracking ----
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+    mouseAngle = Math.atan2(my - ball.y, mx - ball.x);
+    if (!inFlight && !holeComplete) draw();
+  });
+
+  canvas.addEventListener('mousedown', startCharge);
+  canvas.addEventListener('mouseup',   releaseCharge);
+
+  // Touch support
+  canvas.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = (t.clientX - rect.left) * (canvas.width / rect.width);
+    const my = (t.clientY - rect.top)  * (canvas.height / rect.height);
+    mouseAngle = Math.atan2(my - ball.y, mx - ball.x);
+    startCharge(e);
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', e => {
+    releaseCharge(e);
+    e.preventDefault();
+  }, { passive: false });
+
+  // ---- Buttons ----
+  document.getElementById('btn-shoot').addEventListener('click', () => {
+    if (inFlight || holeComplete || gameOver) return;
+    power = 0.5;
+    shoot();
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    cancelAnimationFrame(animFrame);
+    holeIndex  = 0;
+    holeShots  = 0;
+    totalOver  = 0;
+    scores     = [];
+    gameOver   = false;
+    document.getElementById('scorecard-body').innerHTML = '';
+    generateHole();
+  });
+
+  // ---- UI helpers ----
+  function updatePowerBar(p) {
+    document.getElementById('power-bar').style.width = (p * 100) + '%';
+    document.getElementById('power-pct').textContent  = Math.round(p * 100) + '%';
+  }
+
+  function updateHUD() {
+    document.getElementById('hole-num').textContent  = `${holeIndex+1} / 9`;
+    document.getElementById('par-val').textContent   = PARS[holeIndex];
+    document.getElementById('shots-val').textContent = holeShots;
+    const sign = totalOver === 0 ? 'E' : (totalOver > 0 ? `+${totalOver}` : `${totalOver}`);
+    document.getElementById('total-score').textContent = sign;
+  }
+
+  function setMsg(text, cls) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = cls;
+  }
+
+  function updateScorecard() {
+    const tbody = document.getElementById('scorecard-body');
+    tbody.innerHTML = '';
+    scores.forEach((s, i) => {
+      const cls = s.diff < 0 ? 'under' : s.diff > 0 ? 'over' : 'par';
+      const sign = s.diff === 0 ? 'E' : s.diff > 0 ? `+${s.diff}` : `${s.diff}`;
+      tbody.innerHTML += `<tr>
+        <td>Hole ${i+1}</td>
+        <td>${s.par}</td>
+        <td>${s.shots}</td>
+        <td class="${cls}">${sign}</td>
+      </tr>`;
+    });
+  }
+
+  // ---- Init ----
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+</script>
+
+</body>
+</html>

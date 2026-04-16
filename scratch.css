@@ -1,0 +1,219 @@
+/* scratch.css — Parker Henderson's Sports Scratch Page */
+
+/* === Base === */
+body {
+  font-family: 'Georgia', serif;
+  background-color: #1c3a1c;
+  color: #f0ede4;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Top Nav Bar === */
+.topbar {
+  background-color: #0f1f0f;
+  padding: 10px 20px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 0.9rem;
+}
+
+.topbar a {
+  color: #b8d4a0;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.topbar a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* === Header === */
+.site-header {
+  background-color: #0f2e0f;
+  background-image: linear-gradient(to right, #0f2e0f, #2d5a27);
+  text-align: center;
+  padding: 60px 20px 40px;
+  border-bottom: 4px solid #6a9e50;
+}
+
+.site-header h1 {
+  font-family: 'Georgia', serif;
+  font-size: 3rem;
+  color: #e8f5d8;
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+.site-header .tagline {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 1.1rem;
+  color: #a8c98a;
+  margin-top: 10px;
+}
+
+/* === Content Blocks (divs for positioning) === */
+.content-block {
+  background-color: #243d24;
+  border-radius: 8px;
+  margin: 30px auto;
+  padding: 40px;
+  max-width: 860px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.content-block h2 {
+  font-family: 'Georgia', serif;
+  font-size: 1.7rem;
+  color: #b8d4a0;
+  border-bottom: 2px solid #6a9e50;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.content-block p {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 1rem;
+  color: #d8e8c8;
+  line-height: 1.7;
+}
+
+/* === Lists === */
+ol, ul {
+  font-family: 'Trebuchet MS', sans-serif;
+  color: #d8e8c8;
+  line-height: 1.9;
+  font-size: 1rem;
+}
+
+ol li {
+  font-weight: bold;
+  color: #b8d4a0;
+}
+
+ol li ul li {
+  font-weight: normal;
+  color: #d8e8c8;
+}
+
+/* === Image Gallery === */
+.img-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.img-card {
+  text-align: center;
+  flex: 1;
+  min-width: 220px;
+  max-width: 260px;
+}
+
+.img-card img {
+  width: 100%;
+  border-radius: 6px;
+  border: 2px solid #6a9e50;
+  height: 160px;
+  object-fit: cover;
+}
+
+.img-card p {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #a8c98a;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+/* === Video === */
+.video-wrap {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.video-wrap iframe {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 3px solid #6a9e50;
+}
+
+/* === Back to Top === */
+.text-center {
+  text-align: center;
+}
+
+.back-top {
+  font-family: 'Trebuchet MS', sans-serif;
+  color: #b8d4a0;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 8px 20px;
+  border: 2px solid #6a9e50;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.back-top:hover {
+  background-color: #6a9e50;
+  color: #fff;
+}
+
+/* === App Callout === */
+.app-callout {
+  background-color: #0f2e0f;
+  text-align: center;
+  padding: 50px 20px;
+  border-top: 3px solid #6a9e50;
+  border-bottom: 3px solid #6a9e50;
+}
+
+.app-callout h3 {
+  font-family: 'Georgia', serif;
+  font-size: 2rem;
+  color: #e8f5d8;
+}
+
+.app-callout p {
+  font-family: 'Trebuchet MS', sans-serif;
+  color: #a8c98a;
+  font-size: 1rem;
+}
+
+.play-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 14px 40px;
+  background-color: #6a9e50;
+  color: #fff;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: background-color 0.2s;
+}
+
+.play-btn:hover {
+  background-color: #4e7a38;
+}
+
+/* === Footer === */
+.site-footer {
+  background-color: #0f1f0f;
+  text-align: center;
+  padding: 20px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 0.9rem;
+  color: #7a9e6a;
+}
+
+.site-footer a {
+  color: #b8d4a0;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
